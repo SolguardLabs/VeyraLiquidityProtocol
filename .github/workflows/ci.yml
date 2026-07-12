@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  foundry:
+    name: Foundry
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      FOUNDRY_PROFILE: ci
+      FOUNDRY_DISABLE_NIGHTLY_WARNING: "1"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Instalar Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+
+      - name: Mostrar versiones
+        run: |
+          forge --version
+          cast --version
+
+      - name: Ejecutar validación
+        run: bash scripts/ci.sh
+

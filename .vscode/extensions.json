@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "JuanBlanco.solidity",
+    "tintinweb.solidity-visual-auditor",
+    "EditorConfig.EditorConfig",
+    "github.vscode-github-actions",
+    "redhat.vscode-yaml"
+  ]
+}
+
