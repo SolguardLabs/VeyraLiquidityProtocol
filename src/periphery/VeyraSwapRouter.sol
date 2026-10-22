@@ -81,11 +81,11 @@ contract VeyraSwapRouter is IVeyraRouter, IVeyraSwapCallback {
         VeyraTypes.BalanceDelta memory delta = IVeyraPool(pool)
             .swap(
                 VeyraTypes.SwapParams({
-                recipient: params.recipient,
-                zeroForOne: zeroForOne,
-                amountSpecified: int256(params.amountIn),
-                sqrtPriceLimitX96: params.sqrtPriceLimitX96
-            }),
+                    recipient: params.recipient,
+                    zeroForOne: zeroForOne,
+                    amountSpecified: int256(params.amountIn),
+                    sqrtPriceLimitX96: params.sqrtPriceLimitX96
+                }),
                 callbackData
             );
         _requireCallbackConsumed();
@@ -124,11 +124,11 @@ contract VeyraSwapRouter is IVeyraRouter, IVeyraSwapCallback {
         VeyraTypes.BalanceDelta memory delta = IVeyraPool(pool)
             .swap(
                 VeyraTypes.SwapParams({
-                recipient: params.recipient,
-                zeroForOne: zeroForOne,
-                amountSpecified: -int256(params.amountOut),
-                sqrtPriceLimitX96: params.sqrtPriceLimitX96
-            }),
+                    recipient: params.recipient,
+                    zeroForOne: zeroForOne,
+                    amountSpecified: -int256(params.amountOut),
+                    sqrtPriceLimitX96: params.sqrtPriceLimitX96
+                }),
                 callbackData
             );
         _requireCallbackConsumed();

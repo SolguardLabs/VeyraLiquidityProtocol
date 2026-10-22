@@ -19,6 +19,7 @@ La revisión de seguridad cubre:
 - crecimiento y distribución de comisiones;
 - permisos, pausas y parámetros administrativos;
 - resultados de Quoter y agregaciones de Lens;
+- composición de vistas de cartera y límites de lectura por lotes;
 - interacciones ERC-20 realizadas por la periferia.
 
 Los despliegues de terceros, interfaces web, indexadores externos, oráculos no
@@ -35,6 +36,8 @@ Las revisiones y pruebas deben comprobar, como mínimo:
 - los balances transferidos corresponden a los importes contabilizados;
 - las comisiones crecen de forma monotónica y se distribuyen según la liquidez
   participante;
+- cualquier transición de rango debe conservar coherencia entre liquidez económica,
+  checkpoints y pasivos cobrables;
 - reducir liquidez no puede retirar más principal del asociado a la posición;
 - solo una cuenta autorizada puede operar sobre una posición NFT;
 - las operaciones vencidas o con límites de slippage incumplidos revierten;
@@ -61,6 +64,19 @@ forge test
 La configuración de CI amplía las ejecuciones fuzz e invariantes. Los cambios sobre
 matemáticas, contabilidad o permisos deben aportar casos nominales, fronteras y
 rechazos explícitos.
+
+```mermaid
+flowchart LR
+  A[Propuesta de cambio] --> B[Formato y compilación]
+  B --> C[Pruebas unitarias y de frontera]
+  C --> D[Revisión de invariantes económicos]
+  D --> E[Revisión independiente]
+  E --> F[Integración]
+```
+
+La automatización no sustituye la revisión independiente. Ninguna lectura agregada
+autoriza una operación: el contrato gestor vuelve a verificar permisos y límites al
+ejecutarla.
 
 ## Gestión de dependencias
 

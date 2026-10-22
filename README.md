@@ -1,6 +1,6 @@
 # Veyra Liquidity Protocol
 
-![banner](./assets/banner.png)
+![Veyra Liquidity Protocol — Solguard Labs](./assets/banner.png)
 
 Veyra es un protocolo de liquidez concentrada para pares ERC-20. El sistema permite a
 los proveedores asignar capital a intervalos de precio concretos, intercambiar activos
@@ -43,6 +43,26 @@ automática ni delega decisiones de mercado.
   importes, precio posterior y datos de ejecución relevantes.
 - **Lens**: agrega lecturas de pools, rangos y posiciones para clientes, indexadores y
   herramientas operativas.
+- **PortfolioView**: reúne titularidad NFT, principal estimado y comisiones observables
+  en lotes de lectura, sin permisos de escritura ni custodia.
+
+```mermaid
+flowchart LR
+  LP[Proveedor de liquidez] --> PM[PositionManager NFT]
+  Trader[Operador de intercambio] --> R[SwapRouter]
+  PM --> P[Pool: precio, ticks, liquidez y comisiones]
+  R --> P
+  F[Factory: identidad canónica] --> P
+  P --> T0[Token 0]
+  P --> T1[Token 1]
+  Q[Quoter] -. lectura .-> P
+  L[Lens] -. lectura .-> P
+  PV[PortfolioView] -. lectura .-> PM
+  PV -. lectura .-> L
+```
+
+La arquitectura, las fórmulas de distribución y los límites de integración se
+desarrollan en [docs/](./docs/README.md).
 
 ## Flujo básico
 
@@ -95,7 +115,15 @@ Se pueden pasar argumentos adicionales de Forge a la suite rápida:
 bash scripts/tests.sh --match-contract PositionManagerTest -vvv
 ```
 
-## Despliegue
+## Integración de cartera
+
+`VeyraPortfolioView.batch(ids)` devuelve filas en el orden de los IDs solicitados.
+Cada fila contiene propietario, pool, rango, liquidez, importes de principal y
+comisiones observables. Es una consulta: no mueve activos ni altera posiciones.
+Conviene paginar los IDs para mantener acotado el tamaño de respuesta RPC. Las
+cantidades son una fotografía del bloque consultado, no una garantía de ejecución.
+
+## Despliegue de referencia
 
 El script principal despliega la Factory y la periferia canónica. Si se definen
 `VEYRA_TOKEN_A` y `VEYRA_TOKEN_B`, también crea e inicializa el primer pool:
@@ -106,7 +134,8 @@ forge script script/DeployVeyra.s.sol:DeployVeyra \
   --broadcast
 ```
 
-El script lee `PRIVATE_KEY` y acepta las variables opcionales `VEYRA_ADMIN`,
+La orden anterior transmite transacciones; ejecútala únicamente en un entorno de
+pruebas controlado. El script lee `PRIVATE_KEY` y acepta las variables opcionales `VEYRA_ADMIN`,
 `VEYRA_FEE_RECIPIENT`, `VEYRA_FEE_PIPS` y `VEYRA_INITIAL_SQRT_PRICE_X96`.
 
 ## Estructura
@@ -119,13 +148,14 @@ El script lee `PRIVATE_KEY` y acepta las variables opcionales `VEYRA_ADMIN`,
 │   ├── interfaces/    # Interfaces públicas
 │   ├── libraries/     # Matemáticas, ticks y utilidades contables
 │   ├── mocks/         # Activos auxiliares para tests
-│   ├── periphery/     # PositionManager, router, quoter y lens
+│   ├── periphery/     # Gestor NFT, router, quoter y vistas
 │   ├── types/         # Tipos compartidos
 │   └── utils/         # Primitivas reutilizables
 ├── test/              # Tests unitarios, fuzz e invariantes
 ├── script/            # Scripts de despliegue y escenarios
 ├── scripts/           # Entradas reproducibles para test y CI
 ├── .github/           # Automatización de integración y dependencias
+├── docs/              # Arquitectura, economía, integración y operaciones
 └── foundry.toml       # Configuración de compilación y pruebas
 ```
 
