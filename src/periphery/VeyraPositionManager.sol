@@ -220,12 +220,12 @@ contract VeyraPositionManager is
         VeyraTypes.BalanceDelta memory delta = IVeyraPool(position.pool)
             .modifyLiquidity(
                 VeyraTypes.ModifyLiquidityParams({
-                owner: address(this),
-                tickLower: position.tickLower,
-                tickUpper: position.tickUpper,
-                liquidityDelta: -_toInt128(params.liquidity),
-                salt: position.salt
-            }),
+                    owner: address(this),
+                    tickLower: position.tickLower,
+                    tickUpper: position.tickUpper,
+                    liquidityDelta: -_toInt128(params.liquidity),
+                    salt: position.salt
+                }),
                 ""
             );
         amount0 = _negativeOrZero(delta.amount0, delta);
@@ -254,14 +254,14 @@ contract VeyraPositionManager is
         (uint128 collected0, uint128 collected1) = IVeyraPool(position.pool)
             .collect(
                 VeyraTypes.CollectParams({
-                owner: address(this),
-                recipient: params.recipient,
-                tickLower: position.tickLower,
-                tickUpper: position.tickUpper,
-                amount0Requested: params.amount0Max,
-                amount1Requested: params.amount1Max,
-                salt: position.salt
-            })
+                    owner: address(this),
+                    recipient: params.recipient,
+                    tickLower: position.tickLower,
+                    tickUpper: position.tickUpper,
+                    amount0Requested: params.amount0Max,
+                    amount1Requested: params.amount1Max,
+                    salt: position.salt
+                })
             );
         amount0 = collected0;
         amount1 = collected1;
@@ -396,12 +396,12 @@ contract VeyraPositionManager is
         VeyraTypes.BalanceDelta memory delta = IVeyraPool(request.pool)
             .modifyLiquidity(
                 VeyraTypes.ModifyLiquidityParams({
-                owner: address(this),
-                tickLower: request.tickLower,
-                tickUpper: request.tickUpper,
-                liquidityDelta: _toInt128(liquidity),
-                salt: request.salt
-            }),
+                    owner: address(this),
+                    tickLower: request.tickLower,
+                    tickUpper: request.tickUpper,
+                    liquidityDelta: _toInt128(liquidity),
+                    salt: request.salt
+                }),
                 data
             );
         _requireCallbackConsumed();
@@ -500,11 +500,11 @@ contract VeyraPositionManager is
         VeyraTypes.BalanceDelta memory delta = IVeyraPool(position.pool)
             .swap(
                 VeyraTypes.SwapParams({
-                recipient: address(this),
-                zeroForOne: params.zeroForOne,
-                amountSpecified: int256(params.amountIn),
-                sqrtPriceLimitX96: params.sqrtPriceLimitX96
-            }),
+                    recipient: address(this),
+                    zeroForOne: params.zeroForOne,
+                    amountSpecified: int256(params.amountIn),
+                    sqrtPriceLimitX96: params.sqrtPriceLimitX96
+                }),
                 data
             );
         _requireCallbackConsumed();
